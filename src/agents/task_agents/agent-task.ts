@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { systemTaskPrompt } from "../system-prompts/create-task";
 import { taskSchema } from "../schemas/taskschema";
+import prisma from "@/lib/prisma";
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -42,6 +43,9 @@ export const createTaskAgent = async (task: string) => {
     // Validate with Zod schema (using the taskSchema that expects { tasks: [...] })
     const validatedResponse = taskSchema.parse(jsonResponse);
     console.log("Validated response:", validatedResponse);
+    
+    // Save to AgentReply table (we'll add this after Prisma regeneration)
+    // TODO: Add after running prisma generate
     
     // Return just the tasks array
     return validatedResponse.tasks;

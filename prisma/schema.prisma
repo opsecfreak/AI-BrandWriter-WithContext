@@ -35,3 +35,13 @@ model Subtask {
   updatedAt DateTime @updatedAt
   task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
 }
+
+model AgentReply {
+  id          String   @id @default(cuid())
+  agentType   String   // "task" or "writer"
+  userPrompt  String
+  openaiResponse String @db.Text
+  processedOutput String? @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

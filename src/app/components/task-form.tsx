@@ -47,9 +47,9 @@ const TaskForm = () => {
       const testResponse = await axios.post("/api/test", { test: "data" });
       console.log("Test API response:", testResponse.data);
       
-      // Now try the simple task endpoint first (without AI)
-      console.log("Calling simple task API (no AI)...");
-      const response = await axios.post("/api/task-simple", data, {
+      // Now try the AI-powered task endpoint
+      console.log("Calling AI-powered task API...");
+      const response = await axios.post("/api/task", data, {
         headers: {
           'Content-Type': 'application/json',
         },
