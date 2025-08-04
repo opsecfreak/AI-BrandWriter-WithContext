@@ -38,30 +38,24 @@ const TaskForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit: SubmitHandler<InputType> = async (data) => {
-     setIsSubmitting(true);
-    axios.post("/api/task",data)
-    .then( (response) => {
-     console.log("Form submitted with data:", response.data);
+    setIsSubmitting(true);
+    console.log("Submitting form data:", data);
     
-   
-    
-    })
-    .catch((error) =>{
-        console.error("Error submitting form:", error);
-    })
-    .finally(() =>{
-        setIsSubmitting(false);
-          reset();
-    })
-
-
-
-
-    // setIsSubmitting(true);
-    // console.log("Form submitted with data:", data);
-    // setIsSubmitting(false);
-    // reset();
+    try {
+      const response = await axios.post("/api/task", data);
+      console.log("Form submitted successfully:", response.data);
+      reset();
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      if (axios.isAxiosError(error)) {
+        console.error("Response data:", error.response?.data);
+        console.error("Response status:", error.response?.status);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+  
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
