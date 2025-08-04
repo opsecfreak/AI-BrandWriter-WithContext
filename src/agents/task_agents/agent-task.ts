@@ -1,29 +1,42 @@
-import { Agent, run } from "@openai/agents";
+import OpenAI from "openai";
 import { systemTaskPrompt } from "../system-prompts/create-task";
-import {  taskSchema } from "../schemas/taskschema";
+import { taskSchema } from "../schemas/taskschema";
 
-
-const agentTask = new Agent({
-  name: "task-agent",
-  model: "gpt-4o-mini",
-  instructions: systemTaskPrompt,
+// Initialize OpenAI client
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 export const createTaskAgent = async (task: string) => {
   try {
     console.log("Creating task agent for:", task);
     
-    const response = await run(agentTask, task);
-    console.log("Raw agent response:", response);
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: systemTaskPrompt
+        },
+        {
+          role: "user",
+          content: task
+        }
+      ],
+      temperature: 0.7,
+    });
     
-    if (!response.finalOutput) {
-      throw new Error("No output received from agent");
+    const response = completion.choices[0].message.content;
+    console.log("Raw OpenAI response:", response);
+    
+    if (!response) {
+      throw new Error("No output received from OpenAI");
     }
     
-    console.log("Agent final output:", response.finalOutput);
+    console.log("OpenAI response content:", response);
     
     // Parse the JSON response
-    const jsonResponse = JSON.parse(response.finalOutput);
+    const jsonResponse = JSON.parse(response);
     console.log("Parsed JSON response:", jsonResponse);
     
     // Validate with Zod schema (using the taskSchema that expects { tasks: [...] })

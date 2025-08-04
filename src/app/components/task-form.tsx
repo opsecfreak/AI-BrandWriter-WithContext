@@ -42,7 +42,19 @@ const TaskForm = () => {
     console.log("Submitting form data:", data);
     
     try {
-      const response = await axios.post("/api/task", data);
+      // Test the simple API endpoint first
+      console.log("Testing basic API connectivity...");
+      const testResponse = await axios.post("/api/test", { test: "data" });
+      console.log("Test API response:", testResponse.data);
+      
+      // Now try the simple task endpoint first (without AI)
+      console.log("Calling simple task API (no AI)...");
+      const response = await axios.post("/api/task-simple", data, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        timeout: 30000, // 30 second timeout
+      });
       console.log("Form submitted successfully:", response.data);
       reset();
     } catch (error) {
@@ -50,6 +62,11 @@ const TaskForm = () => {
       if (axios.isAxiosError(error)) {
         console.error("Response data:", error.response?.data);
         console.error("Response status:", error.response?.status);
+        console.error("Request config:", error.config);
+        
+        if (error.code === 'ECONNABORTED') {
+          console.error("Request timed out");
+        }
       }
     } finally {
       setIsSubmitting(false);
