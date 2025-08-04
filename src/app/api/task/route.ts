@@ -4,19 +4,31 @@ import { jsonResponse, jsonResponseError } from "@/utils/helpers";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (request: NextRequest) => {
+  console.log("=== API Route /api/task POST called ===");
+  
   try {
     const body = await request.json();
-    console.log("Received body:", body);
+    console.log("✅ Request body parsed:", body);
     
     if (!body || !body.task) {
+      console.log("❌ Invalid body or missing task field");
       return jsonResponseError(400);
     }
     
     const { task, description } = body;
-    console.log("Processing task:", task, "with description:", description);
+    console.log("✅ Extracted data - Task:", task, "Description:", description);
     
+    // Test if we can import and use Prisma
+    console.log("🔄 Testing Prisma connection...");
+    await prisma.$connect();
+    console.log("✅ Prisma connected successfully");
+    
+    console.log("🔄 Calling createTaskAgent...");
     const newTask = await createTaskAgent(task);
-    if(!newTask) {
+    console.log("✅ createTaskAgent completed, result:", newTask);
+    
+    if(!newTask || !Array.isArray(newTask)) {
+      console.log("❌ Invalid response from createTaskAgent:", newTask);
       return jsonResponseError(500);
     }
 
@@ -32,8 +44,9 @@ export const POST = async (request: NextRequest) => {
       estimatedTime: subtask.estimatedTime
     }));
 
-    console.log("Mapped subtasks:", sub);
+    console.log("✅ Mapped subtasks:", sub);
 
+    console.log("🔄 Creating task in database...");
     const tasks = await prisma.task.create({
         data: {
             title: task,
@@ -49,7 +62,9 @@ export const POST = async (request: NextRequest) => {
         }
     });
 
-    console.log("Task created successfully:", tasks);
+    console.log("✅ Task created successfully:", tasks);
+    
+    await prisma.$disconnect();
     
     // Return the created task with subtasks
     return NextResponse.json({
@@ -57,7 +72,15 @@ export const POST = async (request: NextRequest) => {
       status: 200
     }, { status: 200 });
   } catch (error) {
-    console.error("Error creating task:", error);
+    console.error("❌ Error in API route:", error);
+    console.error("❌ Error stack:", error instanceof Error ? error.stack : 'No stack trace');
+    
+    try {
+      await prisma.$disconnect();
+    } catch (disconnectError) {
+      console.error("❌ Error disconnecting Prisma:", disconnectError);
+    }
+    
     return jsonResponseError(500);
   }
 };
