@@ -1,4 +1,4 @@
-import { PrismaClient } from "../../app-prisma/generated/prisma"
+import { PrismaClient } from "@prisma/client"
 
 
 

@@ -63,42 +63,50 @@ const TaskForm = () => {
     // reset();
   };
   return (
-    <div>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div>
-          <label htmlFor="task">Task*</label>
+    <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <div className="space-y-2">
+          <label htmlFor="task" className="block text-sm font-medium text-gray-700">
+            Task*
+          </label>
           <input
-            className="border border-gray-300 rounded p-2 w-full"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition duration-200 text-gray-900"
             {...register("task")}
             type="text"
             placeholder="Enter your task"
           />
-          <span>
-            {errors.task && (
-              <p className=" text-red-400 font-bold">{errors.task.message}</p>
-            )}
-          </span>
+          {errors.task && (
+            <p className="text-sm text-red-600 mt-1">{errors.task.message}</p>
+          )}
         </div>
-        <div>
-          <label htmlFor="task">AI Context</label>
+        
+        <div className="space-y-2">
+          <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+            AI Context
+          </label>
           <textarea
-            className="border border-gray-300 rounded p-2 w-full"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition duration-200 resize-none text-gray-900"
             {...register("description")}
             placeholder="Enter more context for your task if needed for AI"
+            rows={3}
           />
-          <span>
-            {errors.description && (
-              <p className=" text-red-400 font-bold">{errors.description.message}</p>
-            )}
-          </span>
+          {errors.description && (
+            <p className="text-sm text-red-600 mt-1">{errors.description.message}</p>
+          )}
         </div>
-        <div>
-            <button 
+        
+        <div className="flex justify-center">
+          <button 
             disabled={isSubmitting}
-            className={`rounded-xl py-3 px-4 ${isSubmitting ?  "bg-gray-900":" bg-sky-600"}`}  type="submit">
-
-                {isSubmitting ? "Computing Task" : "Submit Task"}
-            </button>
+            className={`w-full py-3 px-6 rounded-md font-medium text-white transition duration-200 ${
+              isSubmitting 
+                ? "bg-gray-400 cursor-not-allowed" 
+                : "bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
+            }`}  
+            type="submit"
+          >
+            {isSubmitting ? "Computing Task..." : "Submit Task"}
+          </button>
         </div>
       </form>
     </div>
