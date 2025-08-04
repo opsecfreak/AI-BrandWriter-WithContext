@@ -14,11 +14,19 @@ export const POST = async (request: NextRequest) => {
       return jsonResponseError(400);
     }
     
-    const { prompt, brand, platform } = body;
-    console.log("✅ Extracted data - Prompt:", prompt, "Brand:", brand, "Platform:", platform);
+    const { prompt, brandContextId, platform } = body;
+    console.log("✅ Extracted data - Prompt:", prompt, "Brand Context ID:", brandContextId, "Platform:", platform);
+    
+    // TODO: Fetch brand context from database when Prisma is ready
+    let brandName = "Generic Business";
+    if (brandContextId) {
+      console.log("🔄 Would fetch brand context from database for ID:", brandContextId);
+      // const fetchedBrandContext = await prisma.brandContext.findUnique({ where: { id: brandContextId } });
+      // brandName = fetchedBrandContext?.businessName || "Generic Business";
+    }
     
     console.log("🔄 Calling createSocialMediaContent...");
-    const socialMediaContent = await createSocialMediaContent(prompt, brand, platform);
+    const socialMediaContent = await createSocialMediaContent(prompt, brandName, platform);
     console.log("✅ createSocialMediaContent completed, result:", socialMediaContent);
     
     if (!socialMediaContent) {

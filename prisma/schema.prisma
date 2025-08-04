@@ -42,6 +42,28 @@ model AgentReply {
   userPrompt  String
   openaiResponse String @db.Text
   processedOutput String? @db.Text
+  brandContextId String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  brandContext BrandContext? @relation(fields: [brandContextId], references: [id])
+}
+
+model BrandContext {
+  id              String   @id @default(cuid())
+  businessName    String
+  industry        String?
+  targetAudience  String?
+  brandVoice      String?  // casual, professional, friendly, etc.
+  keyProducts     String?  // JSON array of products/services
+  brandValues     String?  // JSON array of core values
+  competitors     String?  // JSON array of competitors
+  uniqueSellingPoints String? // What makes them different
+  brandColors     String?  // hex codes or color names
+  brandKeywords   String?  // JSON array of important keywords
+  website         String?
+  socialMediaHandles String? // JSON object with platform: handle
+  additionalContext String? @db.Text // Any other important context
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  agentReplies    AgentReply[]
 }
