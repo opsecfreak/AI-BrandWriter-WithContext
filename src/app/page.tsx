@@ -21,7 +21,6 @@ export default function Home() {
   const [socialMediaContent, setSocialMediaContent] = useState(null);
   const [selectedBrandId, setSelectedBrandId] = useState<string>("");
   const [showBrandForm, setShowBrandForm] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedGeneration, setSelectedGeneration] = useState<SocialMediaGeneration | null>(null);
 
   const handleSocialMediaContentGenerated = (content: any) => {
@@ -35,11 +34,6 @@ export default function Home() {
 
   const handleSelectGeneration = (generation: SocialMediaGeneration) => {
     setSelectedGeneration(generation);
-    setSidebarOpen(false); // Close sidebar when viewing generation
-  };
-
-  const handleCloseSidebar = () => {
-    setSidebarOpen(false);
   };
 
   const handleCloseModal = () => {
@@ -47,13 +41,13 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-8">
-      {/* Sidebar */}
-      <SocialMediaSidebar
-        onSelectGeneration={handleSelectGeneration}
-        isOpen={sidebarOpen}
-        onToggle={() => setSidebarOpen(!sidebarOpen)}
-      />
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex">
+      {/* Fixed Left Sidebar */}
+      <div className="w-80 flex-shrink-0">
+        <SocialMediaSidebar
+          onSelectGeneration={handleSelectGeneration}
+        />
+      </div>
 
       {/* Modal for viewing historical content */}
       <SocialMediaModal
@@ -62,79 +56,79 @@ export default function Home() {
       />
 
       {/* Main Content */}
-      <div className={`max-w-6xl mx-auto space-y-8 transition-all duration-300 ${
-        sidebarOpen ? 'ml-80' : 'ml-0'
-      }`}>
-        {/* Header */}
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">AI Social Media Studio</h1>
-          <p className="text-gray-600">Create engaging social media content with AI-powered brand awareness</p>
-        </div>
-
-        {/* Brand Context Section */}
-        <div className="flex justify-center">
-          <button
-            onClick={() => setShowBrandForm(!showBrandForm)}
-            className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200 shadow-md"
-          >
-            <span className="text-xl mr-2">🏢</span>
-            {showBrandForm ? "Hide Brand Setup" : "Setup Brand Context"}
-          </button>
-        </div>
-
-        {/* Conditional Brand Form */}
-        {showBrandForm && (
-          <div className="max-w-4xl mx-auto">
-            <BrandContextForm onBrandSaved={handleBrandSaved} />
+      <div className="flex-1 p-4 sm:p-8">
+        <div className="max-w-6xl mx-auto space-y-8">
+          {/* Header */}
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-gray-800 mb-2">AI Social Media Studio</h1>
+            <p className="text-gray-600">Create engaging social media content with AI-powered brand awareness</p>
           </div>
-        )}
 
-        {/* Social Media Creator */}
-        <div className="max-w-2xl mx-auto">
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-semibold text-gray-700 flex items-center justify-center">
-              <span className="mr-2">✨</span>
-              Social Media Content Creator
-            </h2>
-            <p className="text-gray-600 mt-2">
-              Generate platform-optimized content for your brand
-            </p>
-            {selectedBrandId && (
-              <div className="mt-3 p-2 bg-blue-50 rounded-lg border border-blue-200">
-                <p className="text-sm text-blue-700">
-                  🏢 Using stored brand context for content generation
-                </p>
-              </div>
-            )}
+          {/* Brand Context Section */}
+          <div className="flex justify-center">
+            <button
+              onClick={() => setShowBrandForm(!showBrandForm)}
+              className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200 shadow-md"
+            >
+              <span className="text-xl mr-2">🏢</span>
+              {showBrandForm ? "Hide Brand Setup" : "Setup Brand Context"}
+            </button>
           </div>
-          <SocialMediaForm 
-            onContentGenerated={handleSocialMediaContentGenerated} 
-            selectedBrandId={selectedBrandId}
-          />
-        </div>
 
-        {/* Social Media Content Display */}
-        {socialMediaContent && (
-          <div className="space-y-4">
-            <div className="text-center">
-              <h2 className="text-2xl font-semibold text-gray-700 flex items-center justify-center">
-                <span className="mr-2">🎯</span>
-                Generated Social Media Content
-              </h2>
-              <p className="text-gray-600 mt-2">Ready to copy and paste to your social platforms!</p>
+          {/* Conditional Brand Form */}
+          {showBrandForm && (
+            <div className="max-w-4xl mx-auto">
+              <BrandContextForm onBrandSaved={handleBrandSaved} />
             </div>
-            <SocialMediaContentDisplay content={socialMediaContent} />
-          </div>
-        )}
+          )}
 
-        {/* Footer */}
-        <div className="text-center py-8">
-          <p className="text-gray-500 text-sm">
-            Powered by AI • Create engaging content for Twitter, LinkedIn, Instagram, YouTube, and Facebook
-          </p>
-          <p className="text-gray-400 text-xs mt-2">
-            📜 Click the history button to view previous generations
-          </p>
+          {/* Social Media Creator */}
+          <div className="max-w-2xl mx-auto">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-semibold text-gray-700 flex items-center justify-center">
+                <span className="mr-2">✨</span>
+                Social Media Content Creator
+              </h2>
+              <p className="text-gray-600 mt-2">
+                Generate platform-optimized content for your brand
+              </p>
+              {selectedBrandId && (
+                <div className="mt-3 p-2 bg-blue-50 rounded-lg border border-blue-200">
+                  <p className="text-sm text-blue-700">
+                    🏢 Using stored brand context for content generation
+                  </p>
+                </div>
+              )}
+            </div>
+            <SocialMediaForm 
+              onContentGenerated={handleSocialMediaContentGenerated} 
+              selectedBrandId={selectedBrandId}
+            />
+          </div>
+
+          {/* Social Media Content Display */}
+          {socialMediaContent && (
+            <div className="space-y-4">
+              <div className="text-center">
+                <h2 className="text-2xl font-semibold text-gray-700 flex items-center justify-center">
+                  <span className="mr-2">🎯</span>
+                  Generated Social Media Content
+                </h2>
+                <p className="text-gray-600 mt-2">Ready to copy and paste to your social platforms!</p>
+              </div>
+              <SocialMediaContentDisplay content={socialMediaContent} />
+            </div>
+          )}
+
+          {/* Footer */}
+          <div className="text-center py-8">
+            <p className="text-gray-500 text-sm">
+              Powered by AI • Create engaging content for Twitter, LinkedIn, Instagram, YouTube, and Facebook
+            </p>
+            <p className="text-gray-400 text-xs mt-2">
+              📜 Social media history is available in the left sidebar
+            </p>
+          </div>
         </div>
       </div>
     </div>
