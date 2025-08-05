@@ -87,17 +87,52 @@ export const createSocialMediaContent = async (prompt: string, brandContext?: an
         twitter: {
           text: `🚀 Exciting developments at ${brandName}! ${prompt.substring(0, 100)}... Our commitment to excellence in ${industry} drives everything we do. #Innovation #${industry.replace(/\s+/g, '')}`,
           hashtags: ["#Innovation", `#${industry.replace(/\s+/g, '')}`, "#Growth", "#Excellence"],
-          engagement_hook: "What are your thoughts on this? Share your perspective below! 👇"
+          engagement_hook: "What are your thoughts on this? Share your perspective below! 👇",
+          character_count: 280
         },
         linkedin: {
-          text: `I'm excited to share insights about ${prompt.substring(0, 150)}...\n\nAt ${brandName}, we're constantly pushing boundaries in the ${industry} space. This represents a significant opportunity for growth and innovation.\n\n#${industry.replace(/\s+/g, '')} #Innovation #BusinessGrowth`,
+          text: `I'm excited to share insights about ${prompt.substring(0, 150)}...\n\nAt ${brandName}, we're constantly pushing boundaries in the ${industry} space. This represents a significant opportunity for growth and innovation.\n\nHow do you see this impacting the industry? I'd love to hear your insights.\n\n#${industry.replace(/\s+/g, '')} #Innovation #BusinessGrowth`,
           hashtags: ["#Professional", `#${industry.replace(/\s+/g, '')}`, "#Innovation", "#Leadership"],
-          engagement_hook: "How do you see this impacting the industry? I'd love to hear your insights."
+          engagement_hook: "How do you see this impacting the industry? I'd love to hear your insights.",
+          character_count: 500
         },
         instagram: {
-          text: `✨ ${brandName} update! ✨\n\n${prompt.substring(0, 120)}...\n\nWe're passionate about bringing you the best in ${industry}! 💫\n\n#${brandName.replace(/\s+/g, '')} #${industry.replace(/\s+/g, '')} #Innovation #Quality`,
+          text: `✨ ${brandName} update! ✨\n\n${prompt.substring(0, 120)}...\n\nWe're passionate about bringing you the best in ${industry}! 💫\n\nDouble tap if you're as excited as we are! ❤️ Tag someone who needs to see this!\n\n#${brandName.replace(/\s+/g, '')} #${industry.replace(/\s+/g, '')} #Innovation #Quality`,
           hashtags: ["#Innovation", "#Quality", `#${industry.replace(/\s+/g, '')}`, "#Excellence"],
-          engagement_hook: "Double tap if you're as excited as we are! ❤️ Tag someone who needs to see this!"
+          engagement_hook: "Double tap if you're as excited as we are! ❤️ Tag someone who needs to see this!",
+          character_count: 400
+        },
+        youtube_video: {
+          title: `${brandName}: ${prompt.substring(0, 60)}...`,
+          description: `Welcome to ${brandName}! In this video, we explore ${prompt.substring(0, 200)}...\n\nAt ${brandName}, we're committed to excellence in the ${industry} space. This video dives deep into the innovations and strategies that are shaping our industry.\n\n🔔 Subscribe for more insights about ${industry}\n👍 Like if you found this valuable\n💬 Comment with your thoughts\n📢 Share with colleagues\n\nConnect with us:\n- Visit our website for more information\n- Follow us on social media for daily updates\n\n#${brandName.replace(/\s+/g, '')} #${industry.replace(/\s+/g, '')} #Innovation #BusinessGrowth`,
+          hashtags: ["#YouTube", `#${industry.replace(/\s+/g, '')}`, "#Innovation", "#Education"],
+          engagement_hook: "Don't forget to subscribe and hit the notification bell! 🔔",
+          character_count: {
+            title: 80,
+            description: 800
+          }
+        },
+        youtube_shorts: {
+          title: `${brandName}: Quick ${industry} Tips`,
+          description: `Quick insights from ${brandName}! ${prompt.substring(0, 150)}...\n\nWe're revolutionizing the ${industry} space with innovative solutions and expert insights.\n\n🚀 Follow for more quick tips\n💡 Like if this helped you\n📱 Share with your network\n\n#${brandName.replace(/\s+/g, '')} #${industry.replace(/\s+/g, '')} #QuickTips #Innovation #Shorts`,
+          hashtags: ["#Shorts", `#${industry.replace(/\s+/g, '')}`, "#QuickTips", "#Innovation"],
+          engagement_hook: "Follow for more quick tips! 🚀",
+          character_count: {
+            title: 45,
+            description: 400
+          }
+        },
+        facebook_post: {
+          text: `🎉 Exciting news from ${brandName}! 🎉\n\n${prompt.substring(0, 200)}...\n\nAt ${brandName}, we're dedicated to bringing you the very best in ${industry}. Our team works tirelessly to ensure quality, innovation, and excellence in everything we do.\n\nWhat do you think about this development? We'd love to hear your thoughts in the comments below! 👇\n\n#${brandName.replace(/\s+/g, '')} #${industry.replace(/\s+/g, '')} #Innovation #Community`,
+          hashtags: ["#Innovation", "#Community", `#${industry.replace(/\s+/g, '')}`, "#Excellence"],
+          engagement_hook: "What do you think about this development? We'd love to hear your thoughts in the comments below! 👇",
+          character_count: 500
+        },
+        facebook_reel: {
+          caption: `✨ ${brandName} bringing you the latest in ${industry}! ✨\n\n${prompt.substring(0, 150)}...\n\nOur passion for innovation drives everything we do. From concept to execution, we're committed to excellence.\n\n💫 Share if you agree!\n🔥 Follow for more updates\n💬 Tell us what you think\n\n#${brandName.replace(/\s+/g, '')} #${industry.replace(/\s+/g, '')} #Innovation #Reels`,
+          hashtags: ["#Reels", `#${industry.replace(/\s+/g, '')}`, "#Innovation", "#Excellence"],
+          engagement_hook: "Share if you agree! 💫 Follow for more updates 🔥",
+          character_count: 450
         }
       },
       strategy: {
