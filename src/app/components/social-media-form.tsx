@@ -2,28 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { socialMediaFormSchema, type SocialMediaFormData } from "@/agents/schemas/social-media-schema";
 import axios from "axios";
-
-const socialMediaFormSchema = z.object({
-  prompt: z
-    .string()
-    .trim()
-    .min(10, {
-      message: "Content prompt must be at least 10 characters long",
-    })
-    .max(200, {
-      message: "Content prompt must be at most 200 characters long",
-    }),
-  brandContextId: z
-    .string()
-    .optional(),
-  platform: z
-    .string()
-    .optional(),
-});
-
-type SocialMediaInputType = z.infer<typeof socialMediaFormSchema>;
 
 interface SocialMediaFormProps {
   onContentGenerated: (content: any) => void;
@@ -37,7 +17,7 @@ const SocialMediaForm: React.FC<SocialMediaFormProps> = ({ onContentGenerated, s
     formState: { errors },
     reset,
     setValue,
-  } = useForm<SocialMediaInputType>({
+  } = useForm<SocialMediaFormData>({
     resolver: zodResolver(socialMediaFormSchema),
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -46,7 +26,7 @@ const SocialMediaForm: React.FC<SocialMediaFormProps> = ({ onContentGenerated, s
   // Set selected brand when prop changes
   useEffect(() => {
     if (selectedBrandId) {
-      setValue("brandContextId", selectedBrandId);
+      setValue("target_audience", ""); // Reset to use brand context
     }
   }, [selectedBrandId, setValue]);
 
@@ -63,12 +43,17 @@ const SocialMediaForm: React.FC<SocialMediaFormProps> = ({ onContentGenerated, s
     loadBrandContexts();
   }, []);
 
-  const onSubmit: SubmitHandler<SocialMediaInputType> = async (data) => {
+  const onSubmit: SubmitHandler<SocialMediaFormData> = async (data) => {
     setIsSubmitting(true);
     console.log("Submitting social media form data:", data);
     
     try {
-      const response = await axios.post("/api/writer", data, {
+      const submitData = {
+        ...data,
+        brandContextId: selectedBrandId || undefined
+      };
+      
+      const response = await axios.post("/api/writer", submitData, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -95,52 +80,101 @@ const SocialMediaForm: React.FC<SocialMediaFormProps> = ({ onContentGenerated, s
       </h3>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-2">
-          <label htmlFor="prompt" className="block text-sm font-medium text-purple-700">
-            Content Idea*
+          <label htmlFor="topic" className="block text-sm font-medium text-purple-700">
+            Topic/Subject*
           </label>
-          <textarea
-            className="w-full px-3 py-2 border border-purple-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-200 resize-none text-gray-900"
-            {...register("prompt")}
-            placeholder="Describe what you want to post about..."
-            rows={3}
+          <input
+            type="text"
+            className="w-full px-3 py-2 border border-purple-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-200 text-gray-900"
+            {...register("topic")}
+            placeholder="What's your content about? (e.g., New product launch, Industry insights)"
           />
-          {errors.prompt && (
-            <p className="text-sm text-red-600 mt-1">{errors.prompt.message}</p>
+          {errors.topic && (
+            <p className="text-sm text-red-600 mt-1">{errors.topic.message}</p>
           )}
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <label htmlFor="brandContextId" className="block text-sm font-medium text-purple-700">
-              Brand Context
+            <label htmlFor="tone" className="block text-sm font-medium text-purple-700">
+              Tone*
             </label>
             <select
               className="w-full px-3 py-2 border border-purple-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-200 text-gray-900"
-              {...register("brandContextId")}
+              {...register("tone")}
             >
-              <option value="">No specific brand</option>
-              {brandContexts.map((brand) => (
-                <option key={brand.id} value={brand.id}>
-                  {brand.businessName}
-                </option>
-              ))}
+              <option value="professional">Professional</option>
+              <option value="casual">Casual</option>
+              <option value="humorous">Humorous</option>
+              <option value="inspirational">Inspirational</option>
+              <option value="educational">Educational</option>
             </select>
+            {errors.tone && (
+              <p className="text-sm text-red-600 mt-1">{errors.tone.message}</p>
+            )}
           </div>
           
           <div className="space-y-2">
-            <label htmlFor="platform" className="block text-sm font-medium text-purple-700">
-              Platform Focus
+            <label htmlFor="target_audience" className="block text-sm font-medium text-purple-700">
+              Target Audience
             </label>
-            <select
+            <input
+              type="text"
               className="w-full px-3 py-2 border border-purple-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-200 text-gray-900"
-              {...register("platform")}
-            >
-              <option value="">All Platforms</option>
-              <option value="twitter">Twitter/X</option>
-              <option value="linkedin">LinkedIn</option>
-              <option value="instagram">Instagram</option>
-            </select>
+              {...register("target_audience")}
+              placeholder="Who is this for? (leave blank to use brand context)"
+            />
           </div>
+        </div>
+        
+        <div className="space-y-2">
+          <label htmlFor="key_message" className="block text-sm font-medium text-purple-700">
+            Key Message
+          </label>
+          <input
+            type="text"
+            className="w-full px-3 py-2 border border-purple-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-200 text-gray-900"
+            {...register("key_message")}
+            placeholder="Main message you want to convey"
+          />
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <label htmlFor="call_to_action" className="block text-sm font-medium text-purple-700">
+              Call to Action
+            </label>
+            <input
+              type="text"
+              className="w-full px-3 py-2 border border-purple-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-200 text-gray-900"
+              {...register("call_to_action")}
+              placeholder="What should people do? (e.g., Visit our website, Contact us)"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <label htmlFor="hashtags" className="block text-sm font-medium text-purple-700">
+              Hashtags
+            </label>
+            <input
+              type="text"
+              className="w-full px-3 py-2 border border-purple-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-200 text-gray-900"
+              {...register("hashtags")}
+              placeholder="#innovation #technology #business"
+            />
+          </div>
+        </div>
+        
+        <div className="space-y-2">
+          <label htmlFor="additional_context" className="block text-sm font-medium text-purple-700">
+            Additional Context
+          </label>
+          <textarea
+            className="w-full px-3 py-2 border border-purple-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-200 resize-none text-gray-900"
+            {...register("additional_context")}
+            placeholder="Any additional information, specific requirements, or context..."
+            rows={3}
+          />
         </div>
         
         <div className="flex justify-center pt-2">

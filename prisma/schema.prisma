@@ -43,6 +43,16 @@ model AgentReply {
   openaiResponse String @db.Text
   processedOutput String? @db.Text
   brandContextId String?
+  
+  // Social Media specific fields
+  topic       String?  // The main topic/subject
+  tone        String?  // professional, casual, etc.
+  targetAudience String? // Specific audience for this content
+  keyMessage  String?  // Main message to convey
+  callToAction String? // CTA used
+  hashtags    String?  // Hashtags used
+  additionalContext String? // Extra context for this generation
+  
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   brandContext BrandContext? @relation(fields: [brandContextId], references: [id])

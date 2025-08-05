@@ -3,11 +3,26 @@ import { useState } from "react";
 import SocialMediaForm from "./components/social-media-form";
 import SocialMediaContentDisplay from "./components/social-media-content-display";
 import BrandContextForm from "./components/brand-context-form";
+import SocialMediaSidebar from "./components/social-media-sidebar";
+import SocialMediaModal from "./components/social-media-modal";
+
+interface SocialMediaGeneration {
+  id: string;
+  topic: string | null;
+  tone: string | null;
+  userPrompt: string;
+  createdAt: string;
+  targetAudience: string | null;
+  keyMessage: string | null;
+  processedOutput: any;
+}
 
 export default function Home() {
   const [socialMediaContent, setSocialMediaContent] = useState(null);
   const [selectedBrandId, setSelectedBrandId] = useState<string>("");
   const [showBrandForm, setShowBrandForm] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [selectedGeneration, setSelectedGeneration] = useState<SocialMediaGeneration | null>(null);
 
   const handleSocialMediaContentGenerated = (content: any) => {
     setSocialMediaContent(content);
@@ -18,9 +33,38 @@ export default function Home() {
     setShowBrandForm(false);
   };
 
+  const handleSelectGeneration = (generation: SocialMediaGeneration) => {
+    setSelectedGeneration(generation);
+    setSidebarOpen(false); // Close sidebar when viewing generation
+  };
+
+  const handleCloseSidebar = () => {
+    setSidebarOpen(false);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedGeneration(null);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-8">
-      <div className="max-w-6xl mx-auto space-y-8">
+      {/* Sidebar */}
+      <SocialMediaSidebar
+        onSelectGeneration={handleSelectGeneration}
+        isOpen={sidebarOpen}
+        onToggle={() => setSidebarOpen(!sidebarOpen)}
+      />
+
+      {/* Modal for viewing historical content */}
+      <SocialMediaModal
+        generation={selectedGeneration}
+        onClose={handleCloseModal}
+      />
+
+      {/* Main Content */}
+      <div className={`max-w-6xl mx-auto space-y-8 transition-all duration-300 ${
+        sidebarOpen ? 'ml-80' : 'ml-0'
+      }`}>
         {/* Header */}
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">AI Social Media Studio</h1>
@@ -55,6 +99,13 @@ export default function Home() {
             <p className="text-gray-600 mt-2">
               Generate platform-optimized content for your brand
             </p>
+            {selectedBrandId && (
+              <div className="mt-3 p-2 bg-blue-50 rounded-lg border border-blue-200">
+                <p className="text-sm text-blue-700">
+                  🏢 Using stored brand context for content generation
+                </p>
+              </div>
+            )}
           </div>
           <SocialMediaForm 
             onContentGenerated={handleSocialMediaContentGenerated} 
@@ -79,7 +130,10 @@ export default function Home() {
         {/* Footer */}
         <div className="text-center py-8">
           <p className="text-gray-500 text-sm">
-            Powered by AI • Create engaging content for Twitter, LinkedIn, and Instagram
+            Powered by AI • Create engaging content for Twitter, LinkedIn, Instagram, YouTube, and Facebook
+          </p>
+          <p className="text-gray-400 text-xs mt-2">
+            📜 Click the history button to view previous generations
           </p>
         </div>
       </div>
