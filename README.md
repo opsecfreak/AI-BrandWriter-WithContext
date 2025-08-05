@@ -9,9 +9,11 @@ A comprehensive Next.js application that leverages OpenAI's GPT-4o-mini to gener
 ### Core Functionality
 - **Multi-Platform Content Generation**: Create optimized content for 7 social media platforms
 - **Brand Context Memory**: Store and utilize business information for consistent, brand-aware content
+- **Historical Content Management**: Access and manage all previous content generations through an organized sidebar
 - **Character Limit Compliance**: Strict adherence to platform-specific character limits
 - **Real-time Copy-to-Clipboard**: One-click copying for easy content publishing
 - **AI-Powered Strategy**: Generate content strategies and engagement tactics
+- **Content History Tracking**: Organize and reference past content generations by brand
 
 ### Supported Platforms
 | Platform | Character Limits | Content Type |
@@ -91,6 +93,67 @@ pnpm dev
 
 Visit `http://localhost:3000` to access the application.
 
+## 🏢 Brand Context Management
+
+The Brand Context system allows you to store comprehensive business information that the AI uses to generate consistent, brand-aware content across all platforms.
+
+### Features
+- **Persistent Brand Storage**: Save multiple brand profiles in the database
+- **Automatic Context Integration**: AI automatically uses brand context for all content generation
+- **Brand-Specific Content**: Each piece of content reflects your unique brand voice and values
+- **Multiple Brand Support**: Manage multiple brands or clients from a single interface
+
+### Brand Information Fields
+- **Business Name**: Your company or brand name
+- **Industry**: Business sector and specialization
+- **Target Audience**: Detailed description of your ideal customers
+- **Brand Voice**: Communication style (professional, casual, humorous, etc.)
+- **Key Products/Services**: Main offerings and solutions
+- **Brand Values**: Core principles and mission
+- **Unique Selling Points**: What sets you apart from competitors
+- **Website & Social Media**: Online presence information
+- **Additional Context**: Custom brand guidelines and specific requirements
+
+### How It Works
+1. **Setup**: Use the "Setup Brand Context" button to create a comprehensive brand profile
+2. **Storage**: All brand information is securely stored in your PostgreSQL database
+3. **Integration**: When generating content, the AI automatically incorporates your brand context
+4. **Consistency**: Every piece of content maintains your brand voice and messaging
+
+## 📚 Content History Sidebar
+
+The fixed left sidebar provides comprehensive management of your social media content generation history, organized by brand for easy reference and management.
+
+### Key Features
+- **Always Accessible**: Fixed left sidebar that's always visible for easy access
+- **Brand Organization**: Content grouped by brand for clear organization
+- **Collapsible Sections**: Expand/collapse brand sections to focus on relevant content
+- **Generation Previews**: Quick preview of topic, tone, and creation date
+- **Detailed Content Viewing**: Click any generation to view full content in a modal
+- **Content Management**: Delete unwanted generations directly from the sidebar
+- **Real-time Updates**: Automatically refreshes when new content is generated
+
+### Sidebar Navigation
+- **Brand Headers**: Each brand displays name, industry, and generation count
+- **Generation Cards**: Show topic, tone, timestamp, and quick actions
+- **Search & Filter**: Easily find specific content generations
+- **Bulk Actions**: Manage multiple generations efficiently
+
+### Content History Modal
+When you click on any historical generation, a detailed modal displays:
+- **Generation Metadata**: Topic, tone, target audience, key message, and creation date
+- **Original Prompt**: The exact input used to generate the content
+- **Full Content**: Complete generated content for all 7 platforms
+- **Copy Functionality**: Copy any platform's content with one click
+- **Strategy Information**: AI-generated content strategy and engagement tactics
+
+### Use Cases
+- **Content Reference**: Review past successful content for inspiration
+- **Brand Consistency**: Ensure new content aligns with previous messaging
+- **Content Repurposing**: Adapt previous content for new campaigns
+- **Performance Tracking**: Identify which topics and tones work best
+- **Client Management**: Maintain separate histories for multiple brands/clients
+
 ## 📖 API Documentation
 
 ### Brand Context Endpoints
@@ -161,6 +224,59 @@ Update an existing brand context profile.
 }
 ```
 
+### Social Media History Endpoints
+
+#### `GET /api/social-media-history`
+Retrieve all social media content generations organized by brand.
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "brandName": "Mobile Tech Specialists",
+      "brandId": "clxy1234567890",
+      "industry": "UAV Technology & Mobile Tech Solutions",
+      "generations": [
+        {
+          "id": "clxy9876543210",
+          "topic": "New UAV spotlight module launch",
+          "tone": "professional",
+          "userPrompt": "Launch of new UAV spotlight module for commercial applications",
+          "targetAudience": "Commercial drone operators",
+          "keyMessage": "Affordable, reliable UAV lighting solutions",
+          "createdAt": "2025-08-05T14:30:00.000Z",
+          "processedOutput": {
+            "content": {
+              "twitter": { /* full content object */ },
+              "linkedin": { /* full content object */ },
+              // ... other platforms
+            },
+            "strategy": { /* strategy object */ }
+          }
+        }
+      ]
+    }
+  ],
+  "status": 200,
+  "message": "Social media history retrieved successfully"
+}
+```
+
+#### `DELETE /api/social-media-history?id={generationId}`
+Delete a specific content generation from history.
+
+**Parameters:**
+- `id` (query): The ID of the generation to delete
+
+**Response:**
+```json
+{
+  "status": 200,
+  "message": "Generation deleted successfully"
+}
+```
+
 ### Content Generation Endpoints
 
 #### `POST /api/writer`
@@ -210,7 +326,7 @@ Generate AI-powered social media content.
 
 ### Setting Up Brand Context
 
-1. **Navigate to Brand Setup**: Click "Set Up Brand Context" on the homepage
+1. **Navigate to Brand Setup**: Click "Setup Brand Context" on the homepage
 2. **Fill Brand Information**: Complete the comprehensive brand form including:
    - Business name and industry
    - Target audience description
@@ -219,10 +335,11 @@ Generate AI-powered social media content.
    - Brand values and unique selling points
    - Website and social media handles
 3. **Save Context**: Submit the form to store brand information in the database
+4. **Verification**: See the "Using stored brand context" indicator when active
 
 ### Generating Content
 
-1. **Access Content Generator**: Use the social media form on the homepage
+1. **Access Content Generator**: Use the social media form on the main content area
 2. **Input Content Details**:
    - Topic/subject for the content
    - Desired tone (professional, casual, humorous, inspirational, educational)
@@ -233,6 +350,28 @@ Generate AI-powered social media content.
    - Additional context
 3. **Generate Content**: Submit to create AI-powered content for all platforms
 4. **Review & Copy**: Review generated content and use copy buttons for easy publishing
+5. **Automatic History**: Content is automatically saved to the sidebar history
+
+### Using the Content History Sidebar
+
+The left sidebar provides comprehensive access to all your previous content generations:
+
+#### Navigation Features
+- **Always Visible**: Fixed sidebar that's always accessible
+- **Brand Organization**: Content grouped by brand with generation counts
+- **Quick Preview**: See topic, tone, and creation date at a glance
+- **Expand/Collapse**: Click brand headers to show/hide generations
+
+#### Viewing Historical Content
+1. **Browse Brands**: Expand brand sections to see all generations
+2. **Quick Preview**: Hover over generations to see basic information
+3. **Detailed View**: Click any generation to open the full content modal
+4. **Copy Content**: Use copy buttons in the modal for any platform
+
+#### Managing Content History
+- **Delete Generations**: Use the trash icon to remove unwanted content
+- **Refresh History**: Click "🔄 Refresh History" to update the list
+- **Organize by Brand**: Content automatically groups by the brand context used
 
 ### Content Features
 
@@ -241,6 +380,7 @@ Generate AI-powered social media content.
 - **Brand Consistency**: All content reflects your stored brand context
 - **Engagement Hooks**: Built-in engagement strategies for each platform
 - **Copy-to-Clipboard**: One-click copying for immediate use
+- **Historical Reference**: Easy access to all previous generations for inspiration
 
 ## 🗄️ Database Schema
 
@@ -276,18 +416,60 @@ model AgentReply {
   openaiResponse   String        @db.Text
   processedOutput  String?       @db.Text
   brandContextId   String?
+  
+  // Social Media Specific Fields
+  topic            String?       // Content topic
+  tone             String?       // Content tone (professional, casual, etc.)
+  targetAudience   String?       // Target audience description
+  keyMessage       String?       // Main message to convey
+  callToAction     String?       // Call-to-action text
+  hashtags         String?       // Relevant hashtags
+  additionalContext String?      // Additional context provided
+  
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
   brandContext     BrandContext? @relation(fields: [brandContextId], references: [id])
 }
 ```
 
+### Key Schema Features
+- **Brand Context Relationship**: Each content generation links to a brand context
+- **Social Media Metadata**: Stores all input parameters for content generation
+- **Flexible Content Storage**: Supports both structured and raw content formats
+- **Timestamp Tracking**: Automatic creation and update timestamps
+- **Optional Fields**: Most social media fields are optional for flexibility
+
 ## 🔧 Configuration
+
+### Application Architecture
+
+The AI Social Media Studio follows a comprehensive workflow that integrates brand context, content generation, and history management:
+
+#### Content Generation Workflow
+1. **Brand Setup**: Store comprehensive brand information in PostgreSQL
+2. **Content Input**: User provides topic, tone, and additional context
+3. **AI Processing**: OpenAI GPT-4o-mini generates platform-optimized content using brand context
+4. **Content Display**: Generated content shown with character counts and copy buttons
+5. **History Storage**: All generations automatically saved with metadata
+6. **Sidebar Organization**: Content organized by brand in the left sidebar
+
+#### Data Flow
+```
+User Input → Brand Context Integration → AI Generation → Database Storage → Sidebar Display
+```
+
+#### Key Components
+- **Brand Context System**: Persistent storage and automatic integration
+- **Content Generator**: AI-powered multi-platform content creation
+- **History Manager**: Organized storage and retrieval of past generations
+- **Sidebar Navigation**: Always-accessible content history browser
+- **Modal Viewer**: Detailed examination of historical content
 
 ### OpenAI Configuration
 - **Model**: GPT-4o-mini
 - **Temperature**: 0.8 (optimized for creative content)
 - **Max Tokens**: Dynamic based on platform requirements
+- **Context Integration**: Automatic brand context inclusion in prompts
 
 ### Character Limits Enforcement
 The system enforces strict character limits:
