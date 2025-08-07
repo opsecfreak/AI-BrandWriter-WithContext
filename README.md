@@ -30,22 +30,13 @@ A comprehensive Next.js application that leverages OpenAI's GPT-4o-mini to gener
 
 - **Framework**: Next.js 15.4.4 with TypeScript
 - **Database**: PostgreSQL with Prisma ORM
-- **AI Integration**: OpenAI GPT-4o-mini
+> AI-powered, brand-aware multi‑platform content generation with historical insight & selective platform targeting.
 - **Styling**: Tailwind CSS
-- **Form Management**: React Hook Form + Zod validation
+This application lets you generate optimized social media content for selected platforms using stored Brand Context profiles. Every generation is persisted, organized by brand, and instantly referenceable in a fixed left history sidebar. Users must choose a brand and at least one platform— preventing unscoped, wasteful generations and reducing token usage.
 - **Database Provider**: Prisma Accelerate
 
 ## 📋 Prerequisites
 
-- Node.js 18+ 
-- PostgreSQL database
-- OpenAI API key
-- Git
-
-## ⚡ Quick Start
-
-### 1. Clone the Repository
-```bash
 git clone https://github.com/opsecfreak/AiTasks-FormHW.git
 cd AiTasks-FormHW
 ```
@@ -60,12 +51,6 @@ pnpm install
 ### 3. Environment Setup
 Create a `.env` file in the root directory:
 
-```env
-# Database Configuration
-DATABASE_URL="postgresql://username:password@localhost:5432/ai_social_media?schema=public"
-
-# OpenAI Configuration
-OPENAI_API_KEY="your-openai-api-key-here"
 
 # Next.js Configuration
 NEXTAUTH_SECRET="your-nextauth-secret"
@@ -73,7 +58,6 @@ NEXTAUTH_URL="http://localhost:3000"
 ```
 
 ### 4. Database Setup
-```bash
 # Generate Prisma client
 npx prisma generate
 
@@ -108,45 +92,23 @@ The Brand Context system allows you to store comprehensive business information 
 - **Industry**: Business sector and specialization
 - **Target Audience**: Detailed description of your ideal customers
 - **Brand Voice**: Communication style (professional, casual, humorous, etc.)
-- **Key Products/Services**: Main offerings and solutions
 - **Brand Values**: Core principles and mission
 - **Unique Selling Points**: What sets you apart from competitors
 - **Website & Social Media**: Online presence information
 - **Additional Context**: Custom brand guidelines and specific requirements
 
-### How It Works
-1. **Setup**: Use the "Setup Brand Context" button to create a comprehensive brand profile
-2. **Storage**: All brand information is securely stored in your PostgreSQL database
-3. **Integration**: When generating content, the AI automatically incorporates your brand context
 4. **Consistency**: Every piece of content maintains your brand voice and messaging
-
-## 📚 Content History Sidebar
-
-The fixed left sidebar provides comprehensive management of your social media content generation history, organized by brand for easy reference and management.
 
 ### Key Features
 - **Always Accessible**: Fixed left sidebar that's always visible for easy access
-- **Brand Organization**: Content grouped by brand for clear organization
-- **Collapsible Sections**: Expand/collapse brand sections to focus on relevant content
-- **Generation Previews**: Quick preview of topic, tone, and creation date
 - **Detailed Content Viewing**: Click any generation to view full content in a modal
-- **Content Management**: Delete unwanted generations directly from the sidebar
 - **Real-time Updates**: Automatically refreshes when new content is generated
 
 ### Sidebar Navigation
 - **Brand Headers**: Each brand displays name, industry, and generation count
 - **Generation Cards**: Show topic, tone, timestamp, and quick actions
-- **Search & Filter**: Easily find specific content generations
-- **Bulk Actions**: Manage multiple generations efficiently
-
-### Content History Modal
-When you click on any historical generation, a detailed modal displays:
 - **Generation Metadata**: Topic, tone, target audience, key message, and creation date
 - **Original Prompt**: The exact input used to generate the content
-- **Full Content**: Complete generated content for all 7 platforms
-- **Copy Functionality**: Copy any platform's content with one click
-- **Strategy Information**: AI-generated content strategy and engagement tactics
-
 ### Use Cases
 - **Content Reference**: Review past successful content for inspiration
 - **Brand Consistency**: Ensure new content aligns with previous messaging
@@ -154,7 +116,6 @@ When you click on any historical generation, a detailed modal displays:
 - **Performance Tracking**: Identify which topics and tones work best
 - **Client Management**: Maintain separate histories for multiple brands/clients
 
-## 📖 API Documentation
 
 ### Brand Context Endpoints
 
@@ -168,16 +129,9 @@ Create a new brand context profile.
   "industry": "UAV Technology & Mobile Tech Solutions",
   "targetAudience": "Drone enthusiasts, commercial UAV operators...",
   "brandVoice": "professional",
-  "keyProducts": "UAV modules, drone customization...",
-  "brandValues": "Innovation, reliability, affordability...",
-  "uniqueSellingPoints": "Affordable UAV modules with hands-on support...",
   "website": "https://mobiletechspecialists.com",
   "additionalContext": "Additional brand information..."
-}
-```
-
 **Response:**
-```json
 {
   "data": {
     "id": "clxy1234567890",
@@ -191,7 +145,6 @@ Create a new brand context profile.
 }
 ```
 
-#### `GET /api/brand-context`
 Retrieve all brand context profiles.
 
 **Response:**
@@ -200,7 +153,6 @@ Retrieve all brand context profiles.
   "data": [
     {
       "id": "clxy1234567890",
-      "businessName": "Mobile Tech Specialists",
       "industry": "UAV Technology & Mobile Tech Solutions",
       "targetAudience": "Drone enthusiasts...",
       "createdAt": "2025-08-05T02:12:18.050Z"
@@ -219,7 +171,6 @@ Update an existing brand context profile.
 {
   "id": "clxy1234567890",
   "businessName": "Updated Business Name",
-  "industry": "Updated Industry",
   // ... other fields
 }
 ```
@@ -228,7 +179,6 @@ Update an existing brand context profile.
 
 #### `GET /api/social-media-history`
 Retrieve all social media content generations organized by brand.
-
 **Response:**
 ```json
 {
@@ -238,34 +188,21 @@ Retrieve all social media content generations organized by brand.
       "brandId": "clxy1234567890",
       "industry": "UAV Technology & Mobile Tech Solutions",
       "generations": [
-        {
-          "id": "clxy9876543210",
-          "topic": "New UAV spotlight module launch",
           "tone": "professional",
-          "userPrompt": "Launch of new UAV spotlight module for commercial applications",
           "targetAudience": "Commercial drone operators",
-          "keyMessage": "Affordable, reliable UAV lighting solutions",
-          "createdAt": "2025-08-05T14:30:00.000Z",
-          "processedOutput": {
-            "content": {
-              "twitter": { /* full content object */ },
               "linkedin": { /* full content object */ },
-              // ... other platforms
             },
             "strategy": { /* strategy object */ }
           }
         }
       ]
     }
-  ],
   "status": 200,
   "message": "Social media history retrieved successfully"
 }
-```
 
 #### `DELETE /api/social-media-history?id={generationId}`
 Delete a specific content generation from history.
-
 **Parameters:**
 - `id` (query): The ID of the generation to delete
 
