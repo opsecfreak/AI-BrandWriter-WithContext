@@ -19,7 +19,6 @@ interface SocialMediaGeneration {
 
 export default function Home() {
   const [socialMediaContent, setSocialMediaContent] = useState(null);
-  const [selectedBrandId, setSelectedBrandId] = useState<string>("");
   const [showBrandForm, setShowBrandForm] = useState(false);
   const [selectedGeneration, setSelectedGeneration] = useState<SocialMediaGeneration | null>(null);
 
@@ -28,8 +27,8 @@ export default function Home() {
   };
 
   const handleBrandSaved = (brandId: string) => {
-    setSelectedBrandId(brandId);
     setShowBrandForm(false);
+    // Optionally refresh the form to show the new brand
   };
 
   const handleSelectGeneration = (generation: SocialMediaGeneration) => {
@@ -89,21 +88,13 @@ export default function Home() {
                 <span className="mr-2">✨</span>
                 Social Media Content Creator
               </h2>
-              <p className="text-gray-600 mt-2">
-                Generate platform-optimized content for your brand
-              </p>
-              {selectedBrandId && (
-                <div className="mt-3 p-2 bg-blue-50 rounded-lg border border-blue-200">
-                  <p className="text-sm text-blue-700">
-                    🏢 Using stored brand context for content generation
-                  </p>
-                </div>
-              )}
-            </div>
-            <SocialMediaForm 
-              onContentGenerated={handleSocialMediaContentGenerated} 
-              selectedBrandId={selectedBrandId}
-            />
+                          <p className="text-gray-600 mt-2">
+              Generate platform-optimized content for your brand
+            </p>
+          </div>
+          <SocialMediaForm 
+            onContentGenerated={handleSocialMediaContentGenerated}
+          />
           </div>
 
           {/* Social Media Content Display */}

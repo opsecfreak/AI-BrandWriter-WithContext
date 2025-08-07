@@ -10,8 +10,8 @@ export const POST = async (request: NextRequest) => {
     const body = await request.json();
     console.log("✅ Request body parsed:", body);
     
-    if (!body || !body.topic) {
-      console.log("❌ Invalid body or missing topic field");
+    if (!body || !body.topic || !body.brand_context_id || !body.platforms) {
+      console.log("❌ Invalid body or missing required fields");
       return jsonResponseError(400);
     }
     
@@ -23,20 +23,28 @@ export const POST = async (request: NextRequest) => {
       call_to_action, 
       hashtags, 
       additional_context,
-      brandContextId 
+      brand_context_id,
+      platforms
     } = body;
     
     console.log("✅ Extracted social media form data");
+    console.log("📊 Selected platforms:", platforms);
     
-    // Fetch brand context from database if provided
-    let brandContext = null;
-    if (brandContextId) {
-      console.log("� Fetching brand context from database...");
-      brandContext = await prisma.brandContext.findUnique({ 
-        where: { id: brandContextId } 
-      });
-      console.log("✅ Brand context fetched:", brandContext?.businessName);
+    // Fetch brand context from database (required)
+    console.log("🏢 Fetching brand context from database...");
+    const brandContext = await prisma.brandContext.findUnique({ 
+      where: { id: brand_context_id } 
+    });
+    
+    if (!brandContext) {
+      console.log("❌ Brand context not found");
+      return NextResponse.json({
+        message: "Brand context not found",
+        status: 404
+      }, { status: 404 });
     }
+    
+    console.log("✅ Brand context fetched:", brandContext?.businessName);
     
     // Create prompt string from form data
     const promptText = `Topic: ${topic}
@@ -45,10 +53,11 @@ ${target_audience ? `Target Audience: ${target_audience}` : ''}
 ${key_message ? `Key Message: ${key_message}` : ''}
 ${call_to_action ? `Call to Action: ${call_to_action}` : ''}
 ${hashtags ? `Hashtags: ${hashtags}` : ''}
-${additional_context ? `Additional Context: ${additional_context}` : ''}`;
+${additional_context ? `Additional Context: ${additional_context}` : ''}
+Selected Platforms: ${platforms.join(', ')}`;
     
     console.log("🔄 Calling createSocialMediaContent...");
-    const socialMediaContent = await createSocialMediaContent(promptText, brandContext);
+    const socialMediaContent = await createSocialMediaContent(promptText, brandContext, platforms);
     console.log("✅ createSocialMediaContent completed");
     
     if (!socialMediaContent) {
@@ -64,7 +73,7 @@ ${additional_context ? `Additional Context: ${additional_context}` : ''}`;
         userPrompt: promptText,
         openaiResponse: JSON.stringify(socialMediaContent),
         processedOutput: JSON.stringify(socialMediaContent),
-        brandContextId: brandContextId || null,
+        brandContextId: brand_context_id,
         // Note: These fields will be available after Prisma regeneration
         ...(typeof (prisma.agentReply as any).fields?.topic !== 'undefined' && {
           topic,

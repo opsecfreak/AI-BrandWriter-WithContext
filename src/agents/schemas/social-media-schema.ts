@@ -80,6 +80,8 @@ export const socialMediaSchema = z.object({
 export const socialMediaFormSchema = z.object({
   topic: z.string().min(1, "Topic is required"),
   tone: z.enum(["professional", "casual", "humorous", "inspirational", "educational"]),
+  brand_context_id: z.string().min(1, "Brand context is required"),
+  platforms: z.array(z.enum(["twitter", "linkedin", "instagram", "youtube_video", "youtube_shorts", "facebook_post", "facebook_reel"])).min(1, "At least one platform must be selected"),
   target_audience: z.string().optional(),
   key_message: z.string().optional(),
   call_to_action: z.string().optional(),
@@ -87,5 +89,17 @@ export const socialMediaFormSchema = z.object({
   additional_context: z.string().optional()
 });
 
+// Platform options for the form
+export const PLATFORM_OPTIONS = [
+  { value: "twitter", label: "Twitter/X", icon: "🐦" },
+  { value: "linkedin", label: "LinkedIn", icon: "💼" },
+  { value: "instagram", label: "Instagram", icon: "📸" },
+  { value: "youtube_video", label: "YouTube Video", icon: "🎥" },
+  { value: "youtube_shorts", label: "YouTube Shorts", icon: "📱" },
+  { value: "facebook_post", label: "Facebook Post", icon: "📘" },
+  { value: "facebook_reel", label: "Facebook Reel", icon: "🎬" }
+] as const;
+
 export type SocialMediaContent = z.infer<typeof socialMediaSchema>;
 export type SocialMediaFormData = z.infer<typeof socialMediaFormSchema>;
+export type PlatformType = typeof PLATFORM_OPTIONS[number]["value"];

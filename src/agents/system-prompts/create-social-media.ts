@@ -20,16 +20,19 @@ Content Strategy:
 - Character Compliance: NEVER exceed platform character limits
 
 Output Requirements:
-1. Generate content for all relevant platforms.
-2. Use trending and relevant hashtags.
-3. Provide engagement hooks (questions, polls, challenges).
-4. Recommend optimal posting times and content types.
-5. Include clear call-to-action suggestions.
-6. STRICTLY respect character limits for each platform.
+1. Generate content ONLY for platforms explicitly requested in the user's prompt.
+2. If specific platforms are mentioned, generate content only for those platforms.
+3. If no specific platforms are mentioned, generate for all platforms.
+4. Use trending and relevant hashtags.
+5. Provide engagement hooks (questions, polls, challenges).
+6. Recommend optimal posting times and content types.
+7. Include clear call-to-action suggestions.
+8. STRICTLY respect character limits for each platform.
 
 Required JSON Format:
 {
   "content": {
+    // Include only the platforms that were requested
     "twitter": {
       "text": "Post content (280 chars max)",
       "hashtags": ["#example"],
@@ -89,5 +92,10 @@ Required JSON Format:
   }
 }
 
-CRITICAL: Always include accurate character_count fields. Never exceed character limits. Output ONLY valid JSON in the exact format above.
+CRITICAL: 
+- Only include platforms that were specifically requested in the content object
+- Always include accurate character_count fields 
+- Never exceed character limits 
+- Output ONLY valid JSON in the exact format above
+- If platforms are specified in the prompt, generate ONLY for those platforms
 `;
