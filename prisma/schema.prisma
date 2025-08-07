@@ -56,6 +56,7 @@ model AgentReply {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   brandContext BrandContext? @relation(fields: [brandContextId], references: [id])
+  publishLogs  PostPublishLog[]
 }
 
 model BrandContext {
@@ -76,4 +77,41 @@ model BrandContext {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   agentReplies    AgentReply[]
+  socialAccounts  SocialAccount[]
+}
+
+// Connected social / publishing accounts per brand (initially Twitter only)
+model SocialAccount {
+  id                String   @id @default(cuid())
+  provider          String   // e.g. 'twitter'
+  providerAccountId String?  // External user id
+  handle            String?  // @handle for quick reference
+  displayName       String?
+  accessToken       String?  // OAuth user access token (store encrypted in production)
+  refreshToken      String?  // For providers supporting refresh
+  tokenExpiresAt    DateTime?
+  scopes            String?  // space/comma-delimited scope list
+  metadata          Json?    // Provider-specific JSON blob
+  brandContextId    String
+  brandContext      BrandContext @relation(fields: [brandContextId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  publishLogs       PostPublishLog[]
+}
+
+// Log of outbound publish attempts to external platforms
+model PostPublishLog {
+  id              String   @id @default(cuid())
+  socialAccountId String
+  socialAccount   SocialAccount @relation(fields: [socialAccountId], references: [id], onDelete: Cascade)
+  agentReplyId    String?
+  agentReply      AgentReply? @relation(fields: [agentReplyId], references: [id], onDelete: SetNull)
+  platform        String   // redundant but convenient (mirrors provider)
+  status          String   // 'pending' | 'success' | 'failed'
+  externalPostId  String?  // id/URL/reference returned by provider
+  errorMessage    String?
+  requestPayload  String?  @db.Text
+  responsePayload String?  @db.Text
+  createdAt       DateTime @default(now())
+  completedAt     DateTime?
 }
