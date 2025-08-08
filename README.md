@@ -319,6 +319,20 @@ The left sidebar provides comprehensive access to all your previous content gene
 - **Copy-to-Clipboard**: One-click copying for immediate use
 - **Historical Reference**: Easy access to all previous generations for inspiration
 
+## 🔗 Account Integrations (New)
+A new `/connect-accounts` page allows linking external social accounts to specific Brand Contexts.
+
+Current Status:
+- Twitter: Mock connection (token storage flow placeholder)
+- Facebook: Planned
+- YouTube: Planned
+
+Data Models Added:
+- `SocialAccount` – stores provider tokens & linkage to brand
+- `PostPublishLog` – future publish attempt logging
+
+See `INTEGRATIONS_GUIDE.txt` for detailed OAuth & security instructions.
+
 ## 🗄️ Database Schema
 
 ### BrandContext Model

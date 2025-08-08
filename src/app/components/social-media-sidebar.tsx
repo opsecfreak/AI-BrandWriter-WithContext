@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 interface SocialMediaGeneration {
   id: string;
@@ -29,6 +30,7 @@ const SocialMediaSidebar: React.FC<SocialMediaSidebarProps> = ({
   const [history, setHistory] = useState<BrandGroup[]>([]);
   const [loading, setLoading] = useState(false);
   const [expandedBrands, setExpandedBrands] = useState<Set<string>>(new Set());
+  const router = useRouter();
 
   useEffect(() => {
     fetchHistory();
@@ -101,14 +103,23 @@ const SocialMediaSidebar: React.FC<SocialMediaSidebarProps> = ({
     >
       <div className="flex flex-col h-full">
         {/* Header */}
-        <div className="p-4 border-b border-gray-200 bg-gray-50">
-          <h2 className="text-lg font-semibold text-gray-800 flex items-center">
-            <span className="mr-2">📱</span>
-            Social Media History
-          </h2>
-          <p className="text-sm text-gray-600 mt-1">
-            Previous content generations by brand
-          </p>
+        <div className="p-4 border-b border-gray-200 bg-gray-50 space-y-2">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-800 flex items-center">
+              <span className="mr-2">📱</span>
+              Social Media History
+            </h2>
+            <p className="text-sm text-gray-600 mt-1">
+              Previous content generations by brand
+            </p>
+          </div>
+          <button
+            onClick={() => router.push('/connect-accounts')}
+            className="w-full flex items-center justify-center text-xs font-medium px-3 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition"
+            title="Connect publishing accounts (Twitter, Facebook, YouTube)"
+          >
+            🔗 Connect Accounts
+          </button>
         </div>
 
         {/* Content */}

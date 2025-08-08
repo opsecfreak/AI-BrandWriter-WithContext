@@ -1,0 +1,147 @@
+Integration Guide: Social Account Connections
+===========================================
+
+Overview
+--------
+This project supports connecting external social publishing accounts to Brand Contexts. Initial implementation targets Twitter (mock OAuth), with placeholders for Facebook and YouTube.
+
+Data Models (Prisma)
+--------------------
+model SocialAccount {
+  id                String   @id @default(cuid())
+  provider          String   // 'twitter' | 'facebook' | 'youtube' ...
+  providerAccountId String?
+  handle            String?
+  displayName       String?
+  accessToken       String?
+  refreshToken      String?
+  tokenExpiresAt    DateTime?
+  scopes            String?
+  metadata          Json?
+  brandContextId    String
+  brandContext      BrandContext @relation(fields: [brandContextId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  publishLogs       PostPublishLog[]
+}
+
+model PostPublishLog {
+  id              String   @id @default(cuid())
+  socialAccountId String
+  socialAccount   SocialAccount @relation(fields: [socialAccountId], references: [id], onDelete: Cascade)
+  agentReplyId    String?
+  agentReply      AgentReply? @relation(fields: [agentReplyId], references: [id], onDelete: SetNull)
+  platform        String
+  status          String   // 'pending' | 'success' | 'failed'
+  externalPostId  String?
+  errorMessage    String?
+  requestPayload  String?  @db.Text
+  responsePayload String?  @db.Text
+  createdAt       DateTime @default(now())
+  completedAt     DateTime?
+}
+
+Flow Summary
+------------
+1. User clicks "Connect Accounts" in sidebar.
+2. Navigates to /connect-accounts page.
+3. Selects a Brand.
+4. Chooses a provider (Twitter implemented) and initiates connect.
+5. (Mock) POST /api/auth/twitter creates SocialAccount row.
+6. Future real OAuth would redirect to provider, then callback persists tokens.
+7. Connected accounts are listed and can be used by publishing endpoints.
+
+Twitter OAuth 2.0 (Planned Real Implementation)
+----------------------------------------------
+Authorization Endpoint: https://twitter.com/i/oauth2/authorize
+Token Endpoint: https://api.twitter.com/2/oauth2/token
+Scopes (minimum): tweet.read tweet.write users.read offline.access
+PKCE Flow Steps:
+  a. Generate code_verifier & code_challenge (S256)
+  b. Redirect user with client_id, redirect_uri, state, code_challenge, scope
+  c. Handle callback: exchange code + code_verifier for tokens (server-side)
+  d. Store access_token, refresh_token (if provided), expires_in -> tokenExpiresAt
+  e. Refresh: POST token endpoint with grant_type=refresh_token before expiry
+
+Security Best Practices
+-----------------------
+- Encrypt tokens at rest (e.g. using libsodium / envelope encryption).
+- Store secrets server-side only; never expose access tokens to client.
+- Validate `state` param to prevent CSRF.
+- Use short-lived access + rotating refresh tokens where available.
+- Minimal scopes: only request permissions required to post.
+- Rate limit publish endpoints to avoid abuse.
+- Log every publish attempt in PostPublishLog with sanitized payload.
+
+Google / YouTube OAuth Requirements
+-----------------------------------
+- Create Google Cloud project
+- Configure OAuth Consent Screen (External if needed)
+- Create Web Application OAuth Client ID with authorized redirect URI
+- Scopes for upload pipeline: youtube.upload youtube.readonly (plus openid email for identity)
+- Handle deferred video processing (media upload then set metadata)
+
+Facebook (Pages) Requirements
+-----------------------------
+- Facebook App (In Development initially)
+- Permissions: pages_manage_posts, pages_read_engagement, pages_show_list
+- User login -> retrieve pages -> request page access token
+- Store page token (it may need periodic renewal)
+
+LinkedIn (Future)
+-----------------
+- Scopes: w_member_social r_liteprofile
+- Endpoint: POST /ugcPosts for rich content or /shares for simple posts
+
+Publishing Flow (Future)
+------------------------
+1. Select generated AgentReply (content) and target SocialAccounts.
+2. For each SocialAccount:
+   - Build provider-specific payload (truncate if necessary)
+   - POST via server adapter (not from browser)
+   - Log status in PostPublishLog
+3. Update UI with success/failure & externalPostId
+
+Adapters Pattern (Planned)
+--------------------------
+interface PublisherAdapter {
+  publishText(params: { account: SocialAccount; content: string }): Promise<{ externalId: string }>
+}
+
+Examples:
+- twitterPublisher.ts: POST https://api.twitter.com/2/tweets { text }
+- facebookPublisher.ts: POST https://graph.facebook.com/{pageId}/feed { message }
+- linkedinPublisher.ts: POST https://api.linkedin.com/v2/ugcPosts {...}
+
+Environment Variables (Planned)
+--------------------------------
+TWITTER_CLIENT_ID
+TWITTER_CLIENT_SECRET
+TWITTER_REDIRECT_URI
+FACEBOOK_APP_ID
+FACEBOOK_APP_SECRET
+FACEBOOK_REDIRECT_URI
+GOOGLE_CLIENT_ID
+GOOGLE_CLIENT_SECRET
+GOOGLE_REDIRECT_URI
+ENCRYPTION_KEY  (32 bytes for token encryption)
+
+Migration & Setup
+-----------------
+1. Update prisma schema (done)
+2. Run: prisma migrate dev --name add_social_accounts
+3. Regenerate client: prisma generate
+4. Access /connect-accounts to test mock Twitter connect
+
+Next Steps
+----------
+- Replace mock Twitter POST with real OAuth redirect + callback handler
+- Add token encryption utility
+- Implement /api/publish endpoint
+- Add UI to publish selected platform content directly
+- Add logs viewer for PostPublishLog
+
+Notes
+-----
+Mock route (/api/auth/twitter) is temporary; DO NOT use in production.
+Review provider terms before enabling automated posting.
